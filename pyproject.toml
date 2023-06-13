@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clwdevops"                                                                # Required
+version = "0.0.0"                                                                 # Required
+description = "Collection of utilities for Clairways devops and lambda functions"
+authors = [{ name = "Justice Amoh", email = "justice@clairways.com" }]
+requires-python = ">=3.10"
+license = { text = "COMMERCIAL" }
+
+[tool.ruff]
+extend-select = ["C4", "SIM", "B", "N", "PIE", "TCH"]
+unfixable = ["F401"]
+show-fixes = true
+line-length = 100

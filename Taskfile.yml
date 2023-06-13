@@ -1,0 +1,46 @@
+version: '3'
+
+vars:
+  GIT_REPO:
+    sh: echo "clairways/$(basename $(PWD))"
+
+tasks:
+  init-repo:
+    desc: ⏳ Initialize Git repo
+    preconditions:
+      - command -v gh  # ensure GitHub CLI gh is installed
+    cmds:
+      - echo 'Initializing Github repo'
+      - gh repo create {{.GIT_REPO}} --private
+      - git init .
+      - git remote add origin git@github.com:{{.GIT_REPO}}.git
+      - git add .
+      - git commit -m "Initial commit"
+      - git push -u origin main
+    status:
+      - test -d .git # if repo exists, skip
+
+  init-project:
+    desc: 🚀 Initialize project
+    preconditions:
+      - command -v pre-commit
+    cmds:
+      - task: init-repo 
+      - pre-commit install
+
+#==============================================================================
+# BUMP Version: Semantic Versioning
+#==============================================================================
+  bump-version:
+    desc: 🏷️ Bump semantic version
+    vars:
+      MAJOR: '{sub(/[0-9]+/,substr($1,12)+1); print $1, 0, 0 "\""; next}1'
+      MINOR: '{print $1, $2+1, 0 "\""; next}1'
+      PATCH: '{print $1, $2, $3+1 "\""; next}1'
+
+      TARGET: '{{.TARGET | default "patch"}}'
+      AWK_PAT: '/^version =/'
+      AWK_CMD: '{{if eq .TARGET "major"}}{{.MAJOR}}{{else if eq .TARGET "minor"}}{{.MINOR}}{{else if eq .TARGET "patch"}}{{.PATCH}}{{end}}'
+    cmds:
+      - awk -F. '{{.AWK_PAT}}{{.AWK_CMD}}' OFS=. pyproject.toml > tmp && mv tmp pyproject.toml
+    silent: true
