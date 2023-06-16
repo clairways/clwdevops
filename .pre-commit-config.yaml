@@ -31,7 +31,7 @@ repos:
         additional_dependencies: ['@commitlint/config-angular']
 
   - repo: git@github.com:clairways/pre-commit-hooks.git
-    rev: v1.1.0
+    rev: v1.1.2
     hooks:
       - id: version-tag-pyproject
         stages: [post-commit]
