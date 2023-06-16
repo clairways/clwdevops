@@ -30,8 +30,8 @@ repos:
         stages: [commit-msg]
         additional_dependencies: ['@commitlint/config-angular']
 
-  # - repo: git@github.com:clairways/pre-commit-hooks.git
-  #   rev: v1.0.7
-  #   hooks:
-  #     - id: version-tag-yaml
-  #       stages: [post-commit]
+  - repo: git@github.com:clairways/pre-commit-hooks.git
+    rev: v1.1.0
+    hooks:
+      - id: version-tag-pyproject
+        stages: [post-commit]
