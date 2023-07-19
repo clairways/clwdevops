@@ -16,6 +16,9 @@ class UploadId:
         self.pid = f"{self.date}/{self.uid}"  # project id: YYYY-MM-dd/uid
         self.user = "client" if "-CC-" in self.uid else "admin"
 
+    def __repr__(self) -> str:
+        return self.uid
+
 
 def load_sops_file(fname: str) -> DictConfig:
     sops = subprocess.run(["sops", "-d", fname], capture_output=True, text=True).stdout
