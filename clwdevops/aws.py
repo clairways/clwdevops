@@ -15,6 +15,18 @@ def get_s3_object(bucket: str, key: str) -> bytes:
     return obj["Body"].read()
 
 
+def download_s3_object(bucket: str, key: str, dst: str):
+    """Download s3 file to destination"""
+    try:
+        s3c.download_file(bucket, key, dst)
+    except botocore.exceptions.ClientError as e:
+        if e.response["Error"]["Code"] == "404":
+            log.info(f"{bucket}/{key} does not exist")
+        else:
+            raise
+    return
+
+
 def put_s3_object(bucket: str, key: str, data: bytes):
     """Upload data to s3 bucket/key"""
     try:
