@@ -37,12 +37,10 @@ def put_s3_object(bucket: str, key: str, data: bytes):
         raise (e)
 
 
-def list_s3_files(bucket: str, prefix: str, suffix: str) -> list:
+def list_s3_files(bucket: str, prefix: str = "", suffix: str = "") -> list:
     """List all files in s3 bucket/prefix with suffix"""
     bkt = s3r.Bucket(bucket)
-    files = [
-        f"s3://{bkt}/{x.key}" for x in bkt.objects.filter(Prefix=prefix) if x.key.endswith(suffix)
-    ]
+    files = [x.key for x in bkt.objects.filter(Prefix=prefix) if x.key.endswith(suffix)]
     return files
 
 
