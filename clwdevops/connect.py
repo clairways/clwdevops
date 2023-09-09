@@ -1,3 +1,4 @@
+import re
 import subprocess
 from dataclasses import dataclass, field
 
@@ -18,6 +19,12 @@ class UploadId:
 
     def __repr__(self) -> str:
         return self.uid
+
+    @classmethod
+    def from_path(cls, path: str):
+        """Extract upload id from path"""
+        sid = re.search(r"(CLW.{31})", path).group(1)
+        return cls(sid)
 
 
 def load_sops_file(fname: str) -> DictConfig:
