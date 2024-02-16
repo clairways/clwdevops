@@ -1,13 +1,12 @@
-import pandas as pd
+import csv
+import ast
 import logging
 import os
-from pathlib import Path, PosixPath
-import boto3
+from pathlib import PosixPath
 from datetime import datetime as dt
 from typing import Tuple
 
 log = logging.getLogger(__name__)
-s3c = boto3.client("s3")
 
 
 def get_csv_metadata(input: PosixPath) -> dict:
@@ -34,36 +33,42 @@ def get_csv_metadata(input: PosixPath) -> dict:
     return metadata
 
 
-def get_df_with_metadata(filepath: PosixPath) -> Tuple[pd.DataFrame, dict]:
+def decomment(csvfile):
+    for row in csvfile:
+        raw = row.split("#")[0].strip()
+        if raw:
+            yield raw
+
+
+def get_csv_with_metadata(filepath: PosixPath) -> Tuple[dict, dict]:
     """Get dataframe with metadata"""
     metadata = get_csv_metadata(filepath)
-    df = pd.read_csv(filepath, comment="#")
-    return df, metadata
+
+    with open(filepath, "r") as f:
+        reader = csv.DictReader(decomment(f))
+        data = [row for row in reader]
+
+    for idx, d in enumerate(data):  # Fix datatypes that get converted to strings
+        for key, value in d.items():
+            try:
+                data[idx][key] = ast.literal_eval(value)
+            except:
+                pass
+    return data, metadata
 
 
-def write_df_to_csv(df: pd.DataFrame, output: PosixPath, metadata: dict = None) -> None:
+def write_csv_with_meta(data: dict, output: PosixPath, metadata: dict = None) -> None:
     """Write dataframe to csv with metadata"""
     if metadata:
         with open(output, "w") as f:
             for key, value in metadata.items():
                 f.write(f"#{key},{value}\n")
-    df.to_csv(output, index=None, mode="a")
-    return
 
-
-def upload_files(bucket: str, key: str, src: str) -> None:
-
-    if not os.path.exists(src):
-        log.error(f"Source file {src} does not exist")
-        return
-
-    src = Path(src)
-    if src.is_dir():
-        for file in src.rglob("*"):
-            if file.is_file():
-                s3c.upload_file(
-                    Filename=str(file), Bucket=bucket, Key=f"{key}/{file.name}"
-                )
+    # df.to_csv(output, index=None, mode="a")
+    with open(output, "a") as f:
+        writer = csv.DictWriter(f, fieldnames=data[0].keys())
+        writer.writeheader()
+        writer.writerows(data)
     return
 
 
@@ -89,31 +94,6 @@ def convert_filename_to_datetime(filename: PosixPath) -> dt:
         return
 
     return timestamp
-
-
-def aggregate_dataframe_by_time(
-    df: pd.DataFrame,
-    startTime: pd.Timestamp,
-    aggFunc=None,
-    timeKey: str = "Timestamp",
-    period: str = "1H",
-) -> pd.DataFrame:
-
-    if not isinstance(df, pd.DataFrame):
-        raise TypeError("df must be a pandas DataFrame")
-    if df.empty:
-        raise ValueError("df cannot be empty")
-
-    if aggFunc is None:
-        dfg = df.groupby(pd.Grouper(key=timeKey, freq=period, origin=startTime))
-    else:
-        dfg = (
-            df.groupby(pd.Grouper(key=timeKey, freq=period, origin=startTime))
-            .agg(aggFunc)
-            .reset_index()
-        )
-
-    return dfg
 
 
 def timestamps_to_study_times(timestamps: list) -> dict:
