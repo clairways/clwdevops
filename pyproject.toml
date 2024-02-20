@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clwdevops"                                                                # Required
-version = "0.3.0"
+version = "0.3.1"
 description = "Collection of utilities for Clairways devops and lambda functions"
 authors = [{ name = "Justice Amoh", email = "justice@clairways.com" }]
 requires-python = ">=3.8"
