@@ -15,3 +15,6 @@ extend-select = ["C4", "SIM", "B", "N", "PIE", "TCH"]
 unfixable = ["F401"]
 show-fixes = true
 line-length = 100
+
+[tool.setuptools]
+py-modules = ["clwdevops"]
