@@ -57,14 +57,15 @@ def get_csv_with_metadata(filepath: PosixPath) -> Tuple[dict, dict]:
     return data, metadata
 
 
-def write_csv_with_meta(data: dict, output: PosixPath, metadata: dict = None) -> None:
+def write_csv_with_metadata(
+    data: dict, output: PosixPath, metadata: dict = None
+) -> None:
     """Write dataframe to csv with metadata"""
+    """If data is provided from a pandas dataframe, use df.to_dict(orient='records') to convert to a list of dictionaries"""
     if metadata:
         with open(output, "w") as f:
             for key, value in metadata.items():
                 f.write(f"#{key},{value}\n")
-
-    # df.to_csv(output, index=None, mode="a")
     with open(output, "a") as f:
         writer = csv.DictWriter(f, fieldnames=data[0].keys())
         writer.writeheader()
