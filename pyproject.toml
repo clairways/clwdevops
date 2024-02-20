@@ -17,9 +17,4 @@ show-fixes = true
 line-length = 100
 
 [tool.setuptools]
-py-modules = [
-    "clwdevops/aws",
-    "clwdevops/connect",
-    "clwdevops/utils",
-    "clwdevops/csvutils",
-]
+package-dir = { "": "clwdevops" }
