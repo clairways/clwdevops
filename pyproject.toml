@@ -17,4 +17,4 @@ show-fixes = true
 line-length = 100
 
 [tool.setuptools]
-package-dir = { "" = "clwdevops" }
+package-dir = { "clwdevops" = "clwdevops" }
