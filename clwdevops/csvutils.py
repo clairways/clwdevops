@@ -1,15 +1,14 @@
-import csv
-import ast
+from pathlib import PosixPath
 import logging
 import os
-from pathlib import PosixPath
-from datetime import datetime as dt
 from typing import Tuple
+import csv
+import ast
 
 log = logging.getLogger(__name__)
 
 
-def get_csv_metadata(input: PosixPath) -> dict:
+def get_csv_metadata(input: PosixPath, comment: str = "#") -> dict:
     """Get metadata for input file"""
     if not input:
         log.error("No input file provided")
@@ -25,7 +24,7 @@ def get_csv_metadata(input: PosixPath) -> dict:
 
     with open(input, "r") as f:
         for line in f:
-            if not line.startswith("#"):
+            if not line.startswith(comment):
                 break
             key, value = line[1:].split(",")
             metadata[key] = value.strip()
@@ -33,9 +32,9 @@ def get_csv_metadata(input: PosixPath) -> dict:
     return metadata
 
 
-def decomment(csvfile):
+def decomment(csvfile, comment: str = "#"):
     for row in csvfile:
-        raw = row.split("#")[0].strip()
+        raw = row.split(comment)[0].strip()
         if raw:
             yield raw
 
@@ -71,43 +70,3 @@ def write_csv_with_metadata(
         writer.writeheader()
         writer.writerows(data)
     return
-
-
-def convert_filename_to_datetime(filename: PosixPath) -> dt:
-    """Convert filename to datetime
-    Assumes filename is in format path/to/file/MMDDYY_XX_HHMMSS.ext"""
-
-    if not isinstance(filename, PosixPath):
-        raise TypeError("filename must be a PosixPath")
-
-    basename = filename.stem  # Get the filename without the extension
-    components = basename.split("_")  # Split the filename into its components
-
-    date = components[0]  # Get the date
-    time = components[2]  # Get the time
-
-    try:
-        timestamp = dt.strptime(
-            f"{date} {time}", "%m%d%y %H%M%S"
-        )  # Combine the date and time into a timestamp
-    except ValueError:
-        log.error(f"Invalid filename format {filename}")
-        return
-
-    return timestamp
-
-
-def timestamps_to_study_times(timestamps: list) -> dict:
-
-    if not isinstance(timestamps, list):
-        raise TypeError("timestamps must be a list")
-
-    studyTimeLabels = ["Timestamp", "StudyDay", "Hour", "HourOfDay"]
-
-    studyTime = {k: [] for k in studyTimeLabels}
-    studyTime["Timestamp"] = timestamps
-    studyTime["StudyDay"] = [i // 24 + 1 for i in range(len(timestamps))]
-    studyTime["Hour"] = [i + 1 for i in range(len(timestamps))]
-    studyTime["HourOfDay"] = [(x - 1) % 24 + 1 for x in studyTime["Hour"]]
-
-    return studyTime
