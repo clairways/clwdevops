@@ -11,7 +11,7 @@ provider "aws" {}
 module "generate_clwdevops_lambda_layer" {
   source       = "git@github.com:clairways/terraform-modules.git//lambda_layer?ref=v1.7.1"
   name         = "clwdevops-lambda-layer"
-  runtime      = "python3.10"
+  runtime      = "python3.11"
   mount_point  = "../"
   requirements = "../requirements.txt"
   out_dir      = "../output"

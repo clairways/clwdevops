@@ -46,7 +46,9 @@ def get_csv_with_metadata(filepath: PosixPath) -> Tuple[dict, dict]:
     with open(filepath, "r") as f:
         reader = csv.DictReader(decomment(f))
         data = [row for row in reader]
-
+        if not data:
+            data = {key: [] for key in reader.fieldnames}
+            return data, metadata
     for idx, d in enumerate(data):  # Fix datatypes that get converted to strings
         for key, value in d.items():
             try:
