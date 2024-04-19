@@ -10,6 +10,12 @@ authors = [{ name = "Justice Amoh", email = "justice@clairways.com" }]
 requires-python = ">=3.8"
 license = { text = "COMMERCIAL" }
 
+# Dependencies
+dependencies = ["boto3", "omegaconf"]
+
+[project.urls]
+Source = "https://github.com/clairways/clwdevops"
+
 [tool.ruff]
 extend-select = ["C4", "SIM", "B", "N", "PIE", "TCH"]
 unfixable = ["F401"]
