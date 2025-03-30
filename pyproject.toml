@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clwdevops"                                                                # Required
-version = "0.4.4"
+version = "0.4.5"
 readme = "README.md"
 description = "Collection of utilities for Clairways devops and lambda functions"
 authors = [{ name = "Justice Amoh", email = "justice@clairways.com" }]
@@ -18,7 +18,7 @@ dependencies = ["boto3", "omegaconf"]
 Source = "https://github.com/clairways/clwdevops"
 
 [tool.ruff]
-extend-select = ["C4", "SIM", "B", "N", "PIE", "TCH"]
+extend-select = ["C4", "SIM", "B", "N", "PIE"]
 unfixable = ["F401"]
 show-fixes = true
 line-length = 100
