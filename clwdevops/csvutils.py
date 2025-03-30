@@ -1,9 +1,10 @@
-from pathlib import PosixPath
+import ast
+import csv
 import logging
 import os
+from contextlib import suppress
+from pathlib import PosixPath
 from typing import Tuple
-import csv
-import ast
 
 log = logging.getLogger(__name__)
 
@@ -45,20 +46,16 @@ def get_csv_with_metadata(filepath: PosixPath) -> Tuple[dict, dict]:
 
     with open(filepath, "r") as f:
         reader = csv.DictReader(decomment(f))
-        data = [row for row in reader]
+        data = list(reader)
 
     for idx, d in enumerate(data):  # Fix datatypes that get converted to strings
         for key, value in d.items():
-            try:
+            with suppress(Exception):
                 data[idx][key] = ast.literal_eval(value)
-            except:
-                pass
     return data, metadata
 
 
-def write_csv_with_metadata(
-    data: dict, output: PosixPath, metadata: dict = None
-) -> None:
+def write_csv_with_metadata(data: dict, output: PosixPath, metadata: dict = None) -> None:
     """Write dataframe to csv with metadata"""
     """If data is provided from a pandas dataframe, use df.to_dict(orient='records') to convert to a list of dictionaries"""
     if metadata:
