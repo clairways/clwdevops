@@ -42,9 +42,14 @@ def convert_filename_to_datetime(filename: PosixPath) -> dt:
     date = components[0]  # Get the date
     time = components[2]  # Get the time
 
+    if len(time) == 8:
+        tfmt = "%m%d%y %H%M%S%f"
+    else:
+        tfmt = "%m%d%y %H%M%S"
+
     try:
         timestamp = dt.strptime(
-            f"{date} {time}", "%m%d%y %H%M%S"
+            f"{date} {time}", tfmt
         )  # Combine the date and time into a timestamp
     except ValueError:
         log.error(f"Invalid filename format {filename}")
