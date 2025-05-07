@@ -31,7 +31,8 @@ class UploadId:
 
 def convert_filename_to_datetime(filename: PosixPath) -> dt:
     """Convert filename to datetime
-    Assumes filename is in format path/to/file/MMDDYY_XX_HHMMSS.ext"""
+    Assumes filename is in format path/to/file/MMDDYY_XX_HHMMSS.ext 
+    or path/to/file/MMDDYY_XX_HHMMSSff.ext"""
 
     if not isinstance(filename, PosixPath):
         raise TypeError("filename must be a PosixPath")
